@@ -1,0 +1,38 @@
+# This is in the meta repository
+name: Shared Workflow
+on:
+  workflow_call:
+    inputs:
+      repo:
+        required: true
+        type: string
+    outputs:
+      artifact-url:
+        description: "URL of the artifact"
+        value: ${{ jobs.build.outputs.artifact-url }}
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+  version:
+    runs-on: ubuntu-latest
+    steps:
+     - uses: ${{ inputs.repo }}/.github/workflows/version.yml@main
+  build:
+    needs: version
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-url: ${{ steps.upload.outputs.url }}
+    steps:
+      - uses: ${{ inputs.repo }}/.github/workflows/build.yml@main
+      - name: Upload artifact
+        id: upload
+        run: echo "::set-output name=url::$(echo "https://example.com")"
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+     - uses: ${{ inputs.repo }}/.github/workflows/deploy.yml@main
+
