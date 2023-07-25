@@ -1,5 +1,5 @@
 # This is in the meta repository
-name: Shared Workflow
+name: Go-quai pipeline
 on:
   workflow_call:
     inputs:
